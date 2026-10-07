@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0f172a">
+<title>Absensi & Keuangan — XII Bisnis Digital 2</title>
+<style>
+:root{
+  --bg:#f5f7fb; --card:#ffffff; --text:#0f172a; --muted:#64748b; --border:#e2e8f0;
+  --primary:#2563eb; --primary2:#1d4ed8; --green:#16a34a; --yellow:#d97706; --red:#dc2626;
+  --purple:#7c3aed; --teal:#0f766e; --shadow:0 10px 30px rgba(15,23,42,.07);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{
+  width:260px;background:linear-gradient(180deg,#0f172a 0%,#111827 100%);color:#fff;position:sticky;top:0;height:100vh;
+  padding:22px 16px;display:flex;flex-direction:column;z-index:20
+}
+.brand{padding:6px 10px 18px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:14px}
+.brand h1{font-size:18px;margin:0 0 5px}.brand p{margin:0;color:#94a3b8;font-size:12px;line-height:1.5}
+.nav{display:grid;gap:6px}.nav button{
+  width:100%;border:0;background:transparent;color:#cbd5e1;text-align:left;padding:11px 12px;border-radius:12px;display:flex;gap:10px;align-items:center;font-weight:600
+}
+.nav button:hover,.nav button.active{background:rgba(255,255,255,.1);color:#fff}
+.nav .icon{width:22px;text-align:center}
+.sidebar-footer{margin-top:auto;color:#94a3b8;font-size:11px;padding:12px 10px}
+.main{flex:1;min-width:0;padding:24px}
+.topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:22px}
+.page-title h2{margin:0;font-size:27px;letter-spacing:-.02em}.page-title p{margin:5px 0 0;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{border:1px solid var(--border);background:#fff;color:var(--text);padding:9px 13px;border-radius:12px;font-weight:700}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary2)}
+.btn.ghost{background:transparent}.btn.danger{color:#fff;background:var(--red);border-color:var(--red)}
+.grid{display:grid;gap:16px}.cards{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.stat .label{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.stat .value{font-size:30px;font-weight:800;margin:8px 0 4px}.stat .sub{font-size:12px;color:var(--muted)}
+.dashboard-grid{grid-template-columns:1.4fr 1fr}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.section-title h3{margin:0;font-size:17px}.muted{color:var(--muted)}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.input,.select,.textarea{border:1px solid var(--border);background:#fff;border-radius:11px;padding:10px 11px;outline:none}
+.input:focus,.select:focus,.textarea:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.input.search{min-width:250px}
+.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:14px}
+table{width:100%;border-collapse:collapse;min-width:720px;background:#fff}
+th,td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px;text-align:left;vertical-align:middle}
+th{background:#f8fafc;color:#475569;font-size:12px;text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0;z-index:1}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800}
+.badge.hadir{background:#dcfce7;color:#166534}.badge.izin{background:#fef3c7;color:#92400e}
+.badge.sakit{background:#dbeafe;color:#1e40af}.badge.alpa{background:#fee2e2;color:#991b1b}
+.badge.success{background:#dcfce7;color:#166534}.badge.neutral{background:#f1f5f9;color:#475569}
+.status-group{display:flex;gap:5px;flex-wrap:wrap}.status-btn{padding:7px 9px;border-radius:9px;border:1px solid var(--border);background:#fff;font-size:11px;font-weight:800}
+.status-btn.active.hadir{background:#dcfce7;border-color:#86efac;color:#166534}
+.status-btn.active.izin{background:#fef3c7;border-color:#fcd34d;color:#92400e}
+.status-btn.active.sakit{background:#dbeafe;border-color:#93c5fd;color:#1e40af}
+.status-btn.active.alpa{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:15px}.tab-btn{border:1px solid var(--border);background:#fff;padding:9px 12px;border-radius:10px;font-weight:700;color:#475569}.tab-btn.active{background:#0f172a;color:#fff;border-color:#0f172a}
+.progress{height:8px;border-radius:999px;background:#e2e8f0;overflow:hidden}.progress > span{display:block;height:100%;background:var(--primary);border-radius:999px}
+.two-col{grid-template-columns:1fr 1fr}.three-col{grid-template-columns:repeat(3,1fr)}
+.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.form-group label{display:block;font-size:11px;font-weight:800;color:#475569;margin-bottom:6px}
+.kpi-list{display:grid;gap:10px}.kpi-row{display:flex;justify-content:space-between;gap:10px;font-size:13px}.kpi-row strong{font-size:14px}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.page{display:none}.page.active{display:block}
+.footer-note{margin-top:16px;font-size:11px;color:var(--muted);text-align:center}
+.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:40}
+.modal-backdrop.show{display:flex}.modal{background:#fff;border-radius:18px;max-width:760px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--border)}.modal-head h3{margin:0}
+.modal-body{padding:20px}.close{border:0;background:#f1f5f9;width:35px;height:35px;border-radius:10px;font-size:18px}
+.alert{padding:12px 14px;border-radius:12px;background:#eff6ff;color:#1e40af;font-size:12px}
+.chart{display:flex;align-items:flex-end;gap:10px;height:180px;padding-top:18px}.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px}.bar .fill{width:100%;max-width:42px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#60a5fa,#2563eb);min-height:2px}.bar small{color:var(--muted);font-size:10px}
+.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#dbeafe;color:#1e40af;font-weight:800}
+.student-cell{display:flex;align-items:center;gap:10px}.student-cell .name{font-weight:700}.student-cell small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+@media(max-width:1080px){.sidebar{width:220px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-grid,.two-col{grid-template-columns:1fr}.form-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){
+  .app{display:block}.sidebar{width:100%;height:auto;position:sticky;top:0;padding:12px;}.brand{margin:0 0 9px}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap;padding:9px}.sidebar-footer{display:none}.main{padding:15px}.topbar{flex-direction:column}.actions{justify-content:flex-start}.cards{grid-template-columns:1fr 1fr}.form-grid,.three-col{grid-template-columns:1fr}
+  .input.search{min-width:170px;flex:1}.page-title h2{font-size:23px}
+}
+@media print{
+  .sidebar,.actions,.toolbar,.footer-note,.btn,.nav{display:none!important}.main{padding:0}.card{box-shadow:none;border:1px solid #ddd}.page{display:none!important}.page.printable{display:block!important}
+  table{min-width:0}.modal-backdrop{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>BD2 • Class Manager</h1>
+      <p>Absensi, tabungan & keuangan<br><b>XII Bisnis Digital 2</b></p>
+    </div>
+    <nav class="nav">
+      <button class="active" data-page="dashboard"><span class="icon">◈</span>Dashboard</button>
+      <button data-page="attendance"><span class="icon">✓</span>Absensi</button>
+      <button data-page="savings"><span class="icon">▣</span>Tabungan</button>
+      <button data-page="finance"><span class="icon">Rp</span>Keuangan Kelas</button>
+      <button data-page="reports"><span class="icon">▤</span>Rekap</button>
+      <button data-page="students"><span class="icon">◌</span>Data Siswa</button>
+      <button data-page="settings"><span class="icon">⚙</span>Pengaturan</button>
+    </nav>
+    <div class="sidebar-footer">Wali Kelas: <b>Dea Faturahman, S.E.</b><br>Data tersimpan otomatis di browser.</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="page-title">
+        <h2 id="pageTitle">Dashboard Kelas</h2>
+        <p id="pageSub">XII Bisnis Digital 2 • SMK Pasundan Rancaekek</p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="backupBtn">Backup JSON</button>
+        <button class="btn" id="printBtn">Cetak Laporan</button>
+      </div>
+    </div>
+
+    <section class="page active" id="page-dashboard">
+      <div class="grid cards">
+        <div class="card stat"><div class="label">Jumlah Siswa</div><div class="value" id="kpiStudents">0</div><div class="sub">Data siswa aktif</div></div>
+        <div class="card stat"><div class="label">Kehadiran Hari Ini</div><div class="value" id="kpiAttendance">0%</div><div class="sub" id="kpiAttendanceSub">Belum ada data</div></div>
+        <div class="card stat"><div class="label">Saldo Tabungan</div><div class="value" id="kpiSavings">Rp0</div><div class="sub">Akumulasi seluruh siswa</div></div>
+        <div class="card stat"><div class="label">Saldo Kas Kelas</div><div class="value" id="kpiFinance">Rp0</div><div class="sub">Pemasukan − pengeluaran</div></div>
+      </div>
+
+      <div class="grid dashboard-grid" style="margin-top:16px">
+        <div class="card">
+          <div class="section-title"><h3>Ringkasan Kehadiran 7 Hari</h3><span class="muted" id="weeklyAvg">-</span></div>
+          <div id="weeklyChart" class="chart"></div>
+        </div>
+        <div class="card">
+          <div class="section-title"><h3>Komposisi Kehadiran Hari Ini</h3></div>
+          <div class="kpi-list" id="todayBreakdown"></div>
+        </div>
+      </div>
+
+      <div class="grid two-col" style="margin-top:16px">
+        <div class="card">
+          <div class="section-title"><h3>Aktivitas Tabungan Terbaru</h3><button class="btn" onclick="go('savings')">Lihat semua</button></div>
+          <div id="recentSavings"></div>
+        </div>
+        <div class="card">
+          <div class="section-title"><h3>Transaksi Keuangan Terbaru</h3><button class="btn" onclick="go('finance')">Lihat semua</button></div>
+          <div id="recentFinance"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-attendance">
+      <div class="card">
+        <div class="toolbar">
+          <input class="input" type="date" id="attendanceDate">
+          <input class="input search" type="search" id="attendanceSearch" placeholder="Cari nama siswa...">
+          <button class="btn primary" id="markAllBtn">Tandai Semua Hadir</button>
+          <button class="btn" id="clearAttendanceBtn">Kosongkan Tanggal</button>
+        </div>
+        <div class="alert" style="margin-bottom:14px">Status disimpan otomatis. Pilih <b>Hadir / Izin / Sakit / Alpa</b> pada setiap siswa. Anda juga dapat memakai nama pencarian untuk mempercepat input.</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th style="width:45px">No.</th><th>Siswa</th><th style="width:45%">Status Kehadiran</th><th>Catatan</th></tr></thead>
+          <tbody id="attendanceBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-savings">
+      <div class="grid cards" style="margin-bottom:16px">
+        <div class="card stat"><div class="label">Saldo Tabungan</div><div class="value" id="savingTotal">Rp0</div><div class="sub">Gabungan seluruh siswa</div></div>
+        <div class="card stat"><div class="label">Total Setoran</div><div class="value" id="savingDeposit">Rp0</div><div class="sub">Semua transaksi setoran</div></div>
+        <div class="card stat"><div class="label">Total Penarikan</div><div class="value" id="savingWithdraw">Rp0</div><div class="sub">Semua transaksi penarikan</div></div>
+        <div class="card stat"><div class="label">Siswa Menabung</div><div class="value" id="savingActive">0</div><div class="sub">Saldo di atas Rp0</div></div>
+      </div>
+      <div class="grid two-col">
+        <div class="card">
+          <div class="section-title"><h3>Input Transaksi Tabungan</h3></div>
+          <div class="form-grid">
+            <div class="form-group" style="grid-column:span 2"><label>Siswa</label><select class="select" id="savingStudent"></select></div>
+            <div class="form-group"><label>Tanggal</label><input class="input" type="date" id="savingDate"></div>
+            <div class="form-group"><label>Jenis</label><select class="select" id="savingType"><option value="deposit">Setoran</option><option value="withdraw">Penarikan</option></select></div>
+            <div class="form-group" style="grid-column:1/-1"><label>Nominal (Rp)</label><input class="input" type="number" min="0" step="100" id="savingAmount" placeholder="Contoh: 10000"></div>
+            <div class="form-group" style="grid-column:1/-1"><label>Keterangan</label><input class="input" id="savingNote" placeholder="Contoh: Tabungan mingguan"></div>
+          </div>
+          <div style="margin-top:12px"><button class="btn primary" id="addSavingBtn">Simpan Transaksi</button></div>
+        </div>
+        <div class="card">
+          <div class="section-title"><h3>Saldo per Siswa</h3><input class="input" id="savingSearch" placeholder="Cari siswa..."></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>No.</th><th>Siswa</th><th>Setoran</th><th>Penarikan</th><th>Saldo</th><th></th></tr></thead>
+            <tbody id="savingSummaryBody"></tbody>
+          </table></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="section-title"><h3>Riwayat Transaksi Tabungan</h3><button class="btn" id="exportSavingsBtn">Export CSV</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Tanggal</th><th>Siswa</th><th>Jenis</th><th>Nominal</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+          <tbody id="savingHistoryBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-finance">
+      <div class="grid cards" style="margin-bottom:16px">
+        <div class="card stat"><div class="label">Saldo Kas</div><div class="value" id="financeBalance">Rp0</div><div class="sub">Saldo berjalan</div></div>
+        <div class="card stat"><div class="label">Pemasukan</div><div class="value" id="financeIncome">Rp0</div><div class="sub">Total pemasukan</div></div>
+        <div class="card stat"><div class="label">Pengeluaran</div><div class="value" id="financeExpense">Rp0</div><div class="sub">Total pengeluaran</div></div>
+        <div class="card stat"><div class="label">Transaksi</div><div class="value" id="financeCount">0</div><div class="sub">Catatan keuangan kelas</div></div>
+      </div>
+      <div class="grid two-col">
+        <div class="card">
+          <div class="section-title"><h3>Input Keuangan Kelas</h3></div>
+          <div class="form-grid">
+            <div class="form-group"><label>Tanggal</label><input class="input" type="date" id="financeDate"></div>
+            <div class="form-group"><label>Jenis</label><select class="select" id="financeType"><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select></div>
+            <div class="form-group" style="grid-column:span 2"><label>Kategori</label><input class="input" id="financeCategory" placeholder="Contoh: Kas Kelas / ATK / Kegiatan"></div>
+            <div class="form-group" style="grid-column:1/-1"><label>Nominal (Rp)</label><input class="input" type="number" min="0" step="100" id="financeAmount" placeholder="Contoh: 25000"></div>
+            <div class="form-group" style="grid-column:1/-1"><label>Keterangan</label><input class="input" id="financeNote" placeholder="Contoh: Pembelian perlengkapan kelas"></div>
+          </div>
+          <div style="margin-top:12px"><button class="btn primary" id="addFinanceBtn">Simpan Transaksi</button></div>
+        </div>
+        <div class="card">
+          <div class="section-title"><h3>Ringkasan Kategori</h3></div>
+          <div id="financeCategories" class="kpi-list"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="section-title"><h3>Riwayat Keuangan Kelas</h3><button class="btn" id="exportFinanceBtn">Export CSV</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Nominal</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+          <tbody id="financeHistoryBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-reports">
+      <div class="tabs">
+        <button class="tab-btn active" data-report="attendance">Rekap Absensi</button>
+        <button class="tab-btn" data-report="savings">Rekap Tabungan</button>
+        <button class="tab-btn" data-report="finance">Rekap Keuangan</button>
+      </div>
+      <div id="report-attendance" class="report-panel">
+        <div class="card">
+          <div class="toolbar">
+            <input class="input" type="month" id="reportMonth">
+            <input class="input search" type="search" id="reportAttendanceSearch" placeholder="Cari siswa...">
+            <button class="btn primary" id="printAttendanceReport">Cetak Rekap Absensi</button>
+            <button class="btn" id="exportAttendanceBtn">Export CSV</button>
+          </div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>No.</th><th>Siswa</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alpa</th><th>Total</th><th>Persentase Hadir</th></tr></thead>
+            <tbody id="attendanceReportBody"></tbody>
+          </table></div>
+        </div>
+      </div>
+      <div id="report-savings" class="report-panel" style="display:none">
+        <div class="card">
+          <div class="toolbar"><input class="input search" id="reportSavingSearch" placeholder="Cari siswa..."><button class="btn primary" id="printSavingReport">Cetak Rekap Tabungan</button><button class="btn" id="exportSavingReportBtn">Export CSV</button></div>
+          <div class="table-wrap"><table><thead><tr><th>No.</th><th>Siswa</th><th>Setoran</th><th>Penarikan</th><th>Saldo</th><th>Transaksi</th></tr></thead><tbody id="savingsReportBody"></tbody></table></div>
+        </div>
+      </div>
+      <div id="report-finance" class="report-panel" style="display:none">
+        <div class="card">
+          <div class="toolbar"><button class="btn primary" id="printFinanceReport">Cetak Rekap Keuangan</button><button class="btn" id="exportFinanceReportBtn">Export CSV</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Nominal</th><th>Keterangan</th></tr></thead><tbody id="financeReportBody"></tbody></table></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-students">
+      <div class="card">
+        <div class="section-title"><div><h3>Data Siswa</h3><div class="muted">Total <span id="studentCount">0</span> siswa</div></div><button class="btn primary" id="addStudentBtn">+ Tambah Siswa</button></div>
+        <div class="toolbar"><input class="input search" id="studentSearch" placeholder="Cari nama siswa..."><button class="btn" id="exportStudentsBtn">Export CSV</button></div>
+        <div class="table-wrap"><table><thead><tr><th>No.</th><th>Siswa</th><th>ID</th><th>Aksi</th></tr></thead><tbody id="studentsBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-settings">
+      <div class="grid two-col">
+        <div class="card">
+          <div class="section-title"><h3>Identitas Kelas</h3></div>
+          <div class="form-grid">
+            <div class="form-group" style="grid-column:1/-1"><label>Nama Kelas</label><input class="input" id="settingClass"></div>
+            <div class="form-group" style="grid-column:1/-1"><label>Wali Kelas</label><input class="input" id="settingHomeroom"></div>
+            <div class="form-group" style="grid-column:1/-1"><label>Instansi</label><input class="input" id="settingSchool"></div>
+          </div>
+          <div style="margin-top:12px"><button class="btn primary" id="saveSettingsBtn">Simpan Pengaturan</button></div>
+        </div>
+        <div class="card">
+          <div class="section-title"><h3>Manajemen Data</h3></div>
+          <p class="muted" style="font-size:13px;line-height:1.6">Gunakan backup JSON untuk memindahkan data ke komputer/browser lain. Import akan mengganti data aplikasi dengan backup yang dipilih.</p>
+          <div class="toolbar">
+            <button class="btn" id="importBtn">Import JSON</button>
+            <input type="file" id="importFile" accept=".json" hidden>
+            <button class="btn danger" id="resetBtn">Reset Semua Data</button>
+          </div>
+          <div class="alert">Data aplikasi menggunakan <b>localStorage</b> sehingga tetap ada setelah browser ditutup. Untuk data administrasi, lakukan backup secara berkala.</div>
+        </div>
+      </div>
+    </section>
+    <div class="footer-note">Dibuat untuk pengelolaan XII Bisnis Digital 2 • Wali Kelas Dea Faturahman, S.E.</div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modalTitle">Form</h3><button class="close" onclick="closeModal()">×</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_STUDENTS = [{"id": 1, "name": "Arum Ayu Wijaningsah"}, {"id": 2, "name": "Athiya Rahmalia"}, {"id": 3, "name": "Aulia Nurjati"}, {"id": 4, "name": "Dea Maharani"}, {"id": 5, "name": "Delia Eka"}, {"id": 6, "name": "Deswita Maharani"}, {"id": 7, "name": "Dimas Aldiansyah"}, {"id": 8, "name": "Eva Tiana"}, {"id": 9, "name": "Gisel Gustiani"}, {"id": 10, "name": "Hasna Siti Abidah"}, {"id": 11, "name": "Hizza Aulia Salamy Ardian"}, {"id": 12, "name": "Irgan Gandara"}, {"id": 13, "name": "Kevina Rizqi Aulia"}, {"id": 14, "name": "Kirana Aura Surya"}, {"id": 15, "name": "Latif Albukhori"}, {"id": 16, "name": "Lutfiya Sa'adah Nurrahmat"}, {"id": 17, "name": "Luvita Marlyana"}, {"id": 18, "name": "Maria Sinta Sukma Reginata"}, {"id": 19, "name": "Megan Apriliani"}, {"id": 20, "name": "Muhamad Ridwan"}, {"id": 21, "name": "Muthia Kartikasari"}, {"id": 22, "name": "Neng Suci Mustikasari"}, {"id": 23, "name": "Neng Dewi Wulan Sari"}, {"id": 24, "name": "Neysa Anggraeni"}, {"id": 25, "name": "Noviani"}, {"id": 26, "name": "Nur Anggraini Aprilia"}, {"id": 27, "name": "Nurlela Septiani"}, {"id": 28, "name": "Nurul Aeni Sinta Iswara"}, {"id": 29, "name": "Ridwan"}, {"id": 30, "name": "Rifka Anye Nurjanah"}, {"id": 31, "name": "Risa Aprilyani"}, {"id": 32, "name": "Risda Wanti"}, {"id": 33, "name": "Rizki Saepul Rahmat"}, {"id": 34, "name": "Rizky Adytia"}, {"id": 35, "name": "Selsa Bela"}, {"id": 36, "name": "Silvi Julianti"}, {"id": 37, "name": "Sinta Reisya Ramadhani"}, {"id": 38, "name": "Siti Mutiara"}, {"id": 39, "name": "Sukarsa Krisnayadi"}, {"id": 40, "name": "Syifa Khairunisa Koswara"}, {"id": 41, "name": "Tiara Aurelia"}, {"id": 42, "name": "Tristan Anugrah"}, {"id": 43, "name": "Yunita Noer Shiva"}, {"id": 44, "name": "Zerah Alexa"}];
+
+const KEY = "bd2_class_manager_v1";
+const today = new Date().toISOString().slice(0,10);
+let data = load();
+
+function defaultState(){
+  return {
+    settings:{className:"XII Bisnis Digital 2",homeroom:"Dea Faturahman, S.E.",school:"SMK Pasundan Rancaekek"},
+    students:DEFAULT_STUDENTS,
+    attendance:{}, savings:[], finance:[]
+  };
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(!raw) return defaultState();
+    const x=JSON.parse(raw);
+    return {...defaultState(),...x,settings:{...defaultState().settings,...(x.settings||{})}};
+  }catch(e){return defaultState()}
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(data)); renderAll();}
+function money(n){return new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(n||0)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+function initials(name){return name.split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()}
+function formatDate(d){if(!d)return"-"; const [y,m,day]=d.split("-"); return `${day}/${m}/${y}`}
+function studentById(id){return data.students.find(s=>String(s.id)===String(id))}
+function statusFor(date,id){return (data.attendance[date]||{})[id]?.status||""}
+function noteFor(date,id){return (data.attendance[date]||{})[id]?.note||""}
+function setAttendance(date,id,status,note){data.attendance[date] ||= {}; data.attendance[date][id]={status,note}; localStorage.setItem(KEY,JSON.stringify(data)); renderAttendance(); renderDashboard();}
+function go(page){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelector("#page-"+page).classList.add("active");
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+  const titles={dashboard:["Dashboard Kelas","Ringkasan absensi, tabungan, dan keuangan"],attendance:["Absensi Siswa","Input kehadiran harian"],savings:["Tabungan Siswa","Setoran, penarikan, dan saldo per siswa"],finance:["Keuangan Kelas","Pemasukan, pengeluaran, dan saldo kas"],reports:["Rekap","Laporan absensi, tabungan, dan keuangan"],students:["Data Siswa","Kelola daftar siswa"],settings:["Pengaturan","Identitas kelas dan manajemen data"]};
+  document.getElementById("pageTitle").textContent=titles[page][0]; document.getElementById("pageSub").textContent=`${data.settings.className} • ${data.settings.school}`;
+  if(page==="dashboard")renderDashboard(); if(page==="attendance")renderAttendance(); if(page==="savings")renderSavings(); if(page==="finance")renderFinance(); if(page==="reports")renderReports(); if(page==="students")renderStudents(); if(page==="settings")renderSettings();
+}
+document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>go(b.dataset.page)));
+
+function renderDashboard(){
+  document.getElementById("kpiStudents").textContent=data.students.length;
+  const recs=(data.attendance[today]||{});
+  const vals=data.students.map(s=>recs[s.id]?.status||"");
+  const recorded=vals.filter(Boolean).length, present=vals.filter(v=>v==="hadir").length;
+  document.getElementById("kpiAttendance").textContent=recorded?Math.round(present/recorded*100)+"%":"0%";
+  document.getElementById("kpiAttendanceSub").textContent=recorded?`${present} dari ${recorded} siswa terisi`:"Belum ada data hari ini";
+  document.getElementById("kpiSavings").textContent=money(totalSavings());
+  document.getElementById("kpiFinance").textContent=money(financeBalance());
+  const chart=document.getElementById("weeklyChart"); chart.innerHTML="";
+  let rates=[];
+  for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);const r=data.attendance[ds]||{};const rec=data.students.map(s=>r[s.id]?.status||"").filter(Boolean);const h=rec.filter(x=>x==="hadir").length;const pct=rec.length?Math.round(h/rec.length*100):0;rates.push(pct); const bar=document.createElement("div");bar.className="bar";bar.innerHTML=`<div class="fill" style="height:${Math.max(pct,2)}%"></div><div style="font-size:11px;font-weight:800">${pct}%</div><small>${ds.slice(8,10)}/${ds.slice(5,7)}</small>`;chart.appendChild(bar)}
+  const avg=Math.round(rates.reduce((a,b)=>a+b,0)/rates.length);document.getElementById("weeklyAvg").textContent=`Rata-rata ${avg}%`;
+  const counts={hadir:0,izin:0,sakit:0,alpa:0}; vals.forEach(v=>{if(counts[v]!==undefined)counts[v]++});
+  document.getElementById("todayBreakdown").innerHTML=[["hadir","Hadir"],["izin","Izin"],["sakit","Sakit"],["alpa","Alpa"]].map(([k,l])=>`<div class="kpi-row"><span><span class="badge ${k}">${l}</span></span><strong>${counts[k]}</strong></div>`).join("");
+  const rs=[...data.savings].sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).slice(0,5);
+  document.getElementById("recentSavings").innerHTML=rs.length?rs.map(x=>`<div class="kpi-row"><span>${esc(studentById(x.studentId)?.name||"Siswa")}<br><small class="muted">${formatDate(x.date)} • ${x.type==="deposit"?"Setoran":"Penarikan"}</small></span><strong>${money(x.amount)}</strong></div>`).join(""):"<div class='empty'>Belum ada transaksi.</div>";
+  const rf=[...data.finance].sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,5);
+  document.getElementById("recentFinance").innerHTML=rf.length?rf.map(x=>`<div class="kpi-row"><span>${esc(x.category||"-")}<br><small class="muted">${formatDate(x.date)} • ${x.type==="income"?"Pemasukan":"Pengeluaran"}</small></span><strong>${money(x.amount)}</strong></div>`).join(""):"<div class='empty'>Belum ada transaksi.</div>";
+}
+function renderAttendance(){
+  document.getElementById("attendanceDate").value ||= today;
+  const d=document.getElementById("attendanceDate").value||today, q=(document.getElementById("attendanceSearch").value||"").toLowerCase();
+  const list=data.students.filter(s=>s.name.toLowerCase().includes(q));
+  document.getElementById("attendanceBody").innerHTML=list.map((s,idx)=>{
+    const st=statusFor(d,s.id);
+    return `<tr><td>${idx+1}</td><td><div class="student-cell"><div class="avatar">${initials(s.name)}</div><div><div class="name">${esc(s.name)}</div><small>ID ${s.id}</small></div></div></td>
+    <td><div class="status-group">${["hadir","izin","sakit","alpa"].map(k=>`<button class="status-btn ${st===k?"active "+k:""}" onclick="pickStatus('${d}',${s.id},'${k}')">${k[0].toUpperCase()+k.slice(1)}</button>`).join("")}</div></td>
+    <td><input class="input" value="${esc(noteFor(d,s.id))}" placeholder="Catatan..." onblur="pickNote('${d}',${s.id},this.value)"></td></tr>`
+  }).join("") || `<tr><td colspan="4"><div class="empty">Siswa tidak ditemukan.</div></td></tr>`;
+}
+function pickStatus(d,id,st){const old=noteFor(d,id);setAttendance(d,id,st,old)}
+function pickNote(d,id,note){const st=statusFor(d,id);setAttendance(d,id,st,note)}
+function totalSavings(){return data.savings.reduce((a,x)=>a+(x.type==="deposit"?x.amount:-x.amount),0)}
+function savingFor(id){const arr=data.savings.filter(x=>String(x.studentId)===String(id));const dep=arr.filter(x=>x.type==="deposit").reduce((a,x)=>a+x.amount,0), wd=arr.filter(x=>x.type==="withdraw").reduce((a,x)=>a+x.amount,0);return {dep,wd,balance:dep-wd,count:arr.length}}
+function renderSavings(){
+  const dep=data.savings.filter(x=>x.type==="deposit").reduce((a,x)=>a+x.amount,0), wd=data.savings.filter(x=>x.type==="withdraw").reduce((a,x)=>a+x.amount,0);
+  document.getElementById("savingTotal").textContent=money(dep-wd);document.getElementById("savingDeposit").textContent=money(dep);document.getElementById("savingWithdraw").textContent=money(wd);
+  document.getElementById("savingActive").textContent=data.students.filter(s=>savingFor(s.id).balance>0).length;
+  document.getElementById("savingDate").value ||= today;
+  const sel=document.getElementById("savingStudent"); const current=sel.value;
+  sel.innerHTML=data.students.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join(""); if(current)sel.value=current;
+  const q=(document.getElementById("savingSearch").value||"").toLowerCase();
+  document.getElementById("savingSummaryBody").innerHTML=data.students.filter(s=>s.name.toLowerCase().includes(q)).map((s,i)=>{const z=savingFor(s.id);return `<tr><td>${i+1}</td><td>${esc(s.name)}</td><td>${money(z.dep)}</td><td>${money(z.wd)}</td><td><b>${money(z.balance)}</b></td><td><button class="btn" onclick="prefillSaving(${s.id})">+ Setor</button></td></tr>`}).join("");
+  const hist=[...data.savings].sort((a,b)=>((b.date||"").localeCompare(a.date||"")) || ((b.createdAt||"").localeCompare(a.createdAt||"")));
+  document.getElementById("savingHistoryBody").innerHTML=hist.length?hist.map(x=>`<tr><td>${formatDate(x.date)}</td><td>${esc(studentById(x.studentId)?.name||"-")}</td><td><span class="badge ${x.type==="deposit"?"success":"alpa"}">${x.type==="deposit"?"Setoran":"Penarikan"}</span></td><td><b>${money(x.amount)}</b></td><td>${esc(x.note||"-")}</td><td><button class="btn" onclick="deleteSaving('${x.id}')">Hapus</button></td></tr>`).join(""):`<tr><td colspan="6"><div class="empty">Belum ada transaksi tabungan.</div></td></tr>`;
+}
+function prefillSaving(id){document.getElementById("savingStudent").value=id;document.getElementById("savingAmount").focus()}
+function deleteSaving(id){if(!confirm("Hapus transaksi tabungan ini?"))return;data.savings=data.savings.filter(x=>x.id!==id);save()}
+function renderFinance(){
+  const income=data.finance.filter(x=>x.type==="income").reduce((a,x)=>a+x.amount,0),expense=data.finance.filter(x=>x.type==="expense").reduce((a,x)=>a+x.amount,0);
+  document.getElementById("financeIncome").textContent=money(income);document.getElementById("financeExpense").textContent=money(expense);document.getElementById("financeBalance").textContent=money(income-expense);document.getElementById("financeCount").textContent=data.finance.length;
+  document.getElementById("financeDate").value ||= today;
+  const cats={};data.finance.forEach(x=>{const k=x.category||"Tanpa kategori";cats[k]=(cats[k]||0)+(x.type==="income"?x.amount:-x.amount)});
+  const catArr=Object.entries(cats).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]));
+  document.getElementById("financeCategories").innerHTML=catArr.length?catArr.map(([k,v])=>`<div class="kpi-row"><span>${esc(k)}</span><strong>${money(v)}</strong></div>`).join(""):"<div class='empty'>Belum ada kategori.</div>";
+  const hist=[...data.finance].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  document.getElementById("financeHistoryBody").innerHTML=hist.length?hist.map(x=>`<tr><td>${formatDate(x.date)}</td><td><span class="badge ${x.type==="income"?"success":"alpa"}">${x.type==="income"?"Pemasukan":"Pengeluaran"}</span></td><td>${esc(x.category||"-")}</td><td><b>${money(x.amount)}</b></td><td>${esc(x.note||"-")}</td><td><button class="btn" onclick="deleteFinance('${x.id}')">Hapus</button></td></tr>`).join(""):`<tr><td colspan="6"><div class="empty">Belum ada transaksi keuangan.</div></td></tr>`;
+}
+function financeBalance(){return data.finance.reduce((a,x)=>a+(x.type==="income"?x.amount:-x.amount),0)}
+function deleteFinance(id){if(!confirm("Hapus transaksi keuangan ini?"))return;data.finance=data.finance.filter(x=>x.id!==id);save()}
+function renderReports(){
+  document.getElementById("reportMonth").value ||= today.slice(0,7);
+  renderAttendanceReport();renderSavingsReport();renderFinanceReport();
+}
+function renderAttendanceReport(){
+  const month=document.getElementById("reportMonth").value||today.slice(0,7),q=(document.getElementById("reportAttendanceSearch").value||"").toLowerCase();
+  const rows=data.students.filter(s=>s.name.toLowerCase().includes(q)).map((s,i)=>{
+    const c={hadir:0,izin:0,sakit:0,alpa:0};Object.entries(data.attendance).forEach(([d,r])=>{if(d.startsWith(month)&&r[s.id]?.status)c[r[s.id].status]++});const total=Object.values(c).reduce((a,b)=>a+b,0),pct=total?Math.round(c.hadir/total*100):0;
+    return `<tr><td>${i+1}</td><td>${esc(s.name)}</td><td>${c.hadir}</td><td>${c.izin}</td><td>${c.sakit}</td><td>${c.alpa}</td><td>${total}</td><td><b>${pct}%</b><div class="progress" style="width:100px;margin-top:5px"><span style="width:${pct}%"></span></div></td></tr>`
+  });
+  document.getElementById("attendanceReportBody").innerHTML=rows.join("")||`<tr><td colspan="8"><div class="empty">Tidak ada data.</div></td></tr>`;
+}
+function renderSavingsReport(){
+  const q=(document.getElementById("reportSavingSearch").value||"").toLowerCase();
+  document.getElementById("savingsReportBody").innerHTML=data.students.filter(s=>s.name.toLowerCase().includes(q)).map((s,i)=>{const z=savingFor(s.id);return `<tr><td>${i+1}</td><td>${esc(s.name)}</td><td>${money(z.dep)}</td><td>${money(z.wd)}</td><td><b>${money(z.balance)}</b></td><td>${z.count}</td></tr>`}).join("");
+}
+function renderFinanceReport(){
+  const hist=[...data.finance].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  document.getElementById("financeReportBody").innerHTML=hist.length?hist.map(x=>`<tr><td>${formatDate(x.date)}</td><td>${x.type==="income"?"Pemasukan":"Pengeluaran"}</td><td>${esc(x.category||"-")}</td><td>${money(x.amount)}</td><td>${esc(x.note||"-")}</td></tr>`).join(""):`<tr><td colspan="5"><div class="empty">Belum ada data keuangan.</div></td></tr>`;
+}
+function renderStudents(){
+  document.getElementById("studentCount").textContent=data.students.length;
+  const q=(document.getElementById("studentSearch").value||"").toLowerCase();
+  document.getElementById("studentsBody").innerHTML=data.students.filter(s=>s.name.toLowerCase().includes(q)).map((s,i)=>`<tr><td>${i+1}</td><td><div class="student-cell"><div class="avatar">${initials(s.name)}</div><div><div class="name">${esc(s.name)}</div></div></div></td><td>${s.id}</td><td><button class="btn" onclick="editStudent(${s.id})">Edit</button> <button class="btn" onclick="removeStudent(${s.id})">Hapus</button></td></tr>`).join("")||`<tr><td colspan="4"><div class="empty">Tidak ada siswa.</div></td></tr>`;
+}
+function renderSettings(){document.getElementById("settingClass").value=data.settings.className;document.getElementById("settingHomeroom").value=data.settings.homeroom;document.getElementById("settingSchool").value=data.settings.school}
+function openModal(title,body){document.getElementById("modalTitle").textContent=title;document.getElementById("modalBody").innerHTML=body;document.getElementById("modalBackdrop").classList.add("show")}
+function closeModal(){document.getElementById("modalBackdrop").classList.remove("show")}
+function editStudent(id){const s=studentById(id);openModal("Edit Siswa",`<div class="form-group"><label>Nama Siswa</label><input class="input" id="editName" value="${esc(s.name)}"></div><div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="updateStudent(${id})">Simpan</button></div>`)}
+function updateStudent(id){const name=document.getElementById("editName").value.trim();if(!name)return alert("Nama harus diisi.");studentById(id).name=name;save();closeModal()}
+function removeStudent(id){const s=studentById(id);if(!confirm(`Hapus ${s.name}? Data absensi dan tabungannya juga akan terkait pada ID ini.`))return;data.students=data.students.filter(x=>x.id!==id);save()}
+function addStudent(){openModal("Tambah Siswa",`<div class="form-group"><label>Nama Siswa</label><input class="input" id="newName" placeholder="Nama lengkap"></div><div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="createStudent()">Tambah</button></div>`)}
+function createStudent(){const name=document.getElementById("newName").value.trim();if(!name)return alert("Nama harus diisi.");const id=data.students.length?Math.max(...data.students.map(s=>Number(s.id)))+1:1;data.students.push({id,name});save();closeModal()}
+function csvEscape(v){const s=String(v??"");return `"${s.replace(/"/g,'""')}"`}
+function download(name,content,type="text/csv;charset=utf-8"){const blob=new Blob([content],{type});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function exportStudents(){const rows=[["No","ID","Nama"],...data.students.map((s,i)=>[i+1,s.id,s.name])];download("data-siswa-bd2.csv",rows.map(r=>r.map(csvEscape).join(",")).join("\n"))}
+function exportSavings(){const rows=[["Tanggal","ID Siswa","Nama","Jenis","Nominal","Keterangan"],...data.savings.map(x=>[x.date,x.studentId,studentById(x.studentId)?.name||"",x.type==="deposit"?"Setoran":"Penarikan",x.amount,x.note||""])];download("tabungan-bd2.csv",rows.map(r=>r.map(csvEscape).join(",")).join("\n"))}
+function exportFinance(){const rows=[["Tanggal","Jenis","Kategori","Nominal","Keterangan"],...data.finance.map(x=>[x.date,x.type==="income"?"Pemasukan":"Pengeluaran",x.category||"",x.amount,x.note||""])];download("keuangan-kelas-bd2.csv",rows.map(r=>r.map(csvEscape).join(",")).join("\n"))}
+function exportAttendance(){
+  const month=document.getElementById("reportMonth").value||today.slice(0,7), rows=[["No","Siswa","Hadir","Izin","Sakit","Alpa","Total","Persentase Hadir"]];
+  data.students.forEach((s,i)=>{const c={hadir:0,izin:0,sakit:0,alpa:0};Object.entries(data.attendance).forEach(([d,r])=>{if(d.startsWith(month)&&r[s.id]?.status)c[r[s.id].status]++});const total=Object.values(c).reduce((a,b)=>a+b,0),pct=total?Math.round(c.hadir/total*100):0;rows.push([i+1,s.name,c.hadir,c.izin,c.sakit,c.alpa,total,pct+"%"])});
+  download(`rekap-absensi-${month}.csv`,rows.map(r=>r.map(csvEscape).join(",")).join("\n"))
+}
+function exportSavingsReport(){exportSavings()}
+function exportFinanceReport(){exportFinance()}
+function backup(){
+  const payload={...data,backupAt:new Date().toISOString()};
+  download("backup-bd2.json",JSON.stringify(payload,null,2),"application/json;charset=utf-8");
+}
+function printPage(title){
+  document.title=title; window.print(); setTimeout(()=>document.title="Absensi & Keuangan — XII Bisnis Digital 2",500)
+}
+
+document.getElementById("attendanceDate").addEventListener("change",renderAttendance);
+document.getElementById("attendanceSearch").addEventListener("input",renderAttendance);
+document.getElementById("markAllBtn").addEventListener("click",()=>{const d=document.getElementById("attendanceDate").value||today;data.attendance[d] ||= {};data.students.forEach(s=>data.attendance[d][s.id]={status:"hadir",note:noteFor(d,s.id)});save()});
+document.getElementById("clearAttendanceBtn").addEventListener("click",()=>{const d=document.getElementById("attendanceDate").value||today;if(confirm("Kosongkan seluruh status pada tanggal ini?")){delete data.attendance[d];save()}});
+document.getElementById("addSavingBtn").addEventListener("click",()=>{const studentId=Number(document.getElementById("savingStudent").value),date=document.getElementById("savingDate").value||today,type=document.getElementById("savingType").value,amount=Number(document.getElementById("savingAmount").value),note=document.getElementById("savingNote").value.trim();if(!studentId||amount<=0)return alert("Pilih siswa dan masukkan nominal yang valid.");if(type==="withdraw" && savingFor(studentId).balance<amount)return alert("Penarikan melebihi saldo tabungan siswa.");data.savings.push({id:(crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2)),studentId,date,type,amount,note,createdAt:new Date().toISOString()});document.getElementById("savingAmount").value="";document.getElementById("savingNote").value="";save()});
+document.getElementById("savingSearch").addEventListener("input",renderSavings);
+document.getElementById("financeDate").value=today;
+document.getElementById("addFinanceBtn").addEventListener("click",()=>{const date=document.getElementById("financeDate").value||today,type=document.getElementById("financeType").value,category=document.getElementById("financeCategory").value.trim(),amount=Number(document.getElementById("financeAmount").value),note=document.getElementById("financeNote").value.trim();if(amount<=0)return alert("Masukkan nominal yang valid.");data.finance.push({id:(crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2)),date,type,category,amount,note});document.getElementById("financeAmount").value="";document.getElementById("financeNote").value="";save()});
+document.querySelectorAll("[data-report]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-report]").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".report-panel").forEach(x=>x.style.display="none");document.getElementById("report-"+b.dataset.report).style.display="block"}));
+document.getElementById("reportMonth").addEventListener("change",renderAttendanceReport);document.getElementById("reportAttendanceSearch").addEventListener("input",renderAttendanceReport);document.getElementById("reportSavingSearch").addEventListener("input",renderSavingsReport);
+document.getElementById("printAttendanceReport").addEventListener("click",()=>printPage("Rekap Absensi - "+data.settings.className));document.getElementById("printSavingReport").addEventListener("click",()=>printPage("Rekap Tabungan - "+data.settings.className));document.getElementById("printFinanceReport").addEventListener("click",()=>printPage("Rekap Keuangan - "+data.settings.className));
+document.getElementById("exportAttendanceBtn").addEventListener("click",exportAttendance);document.getElementById("exportSavingReportBtn").addEventListener("click",exportSavingsReport);document.getElementById("exportFinanceReportBtn").addEventListener("click",exportFinanceReport);
+document.getElementById("exportSavingsBtn").addEventListener("click",exportSavings);document.getElementById("exportFinanceBtn").addEventListener("click",exportFinance);document.getElementById("exportStudentsBtn").addEventListener("click",exportStudents);
+document.getElementById("addStudentBtn").addEventListener("click",addStudent);document.getElementById("studentSearch").addEventListener("input",renderStudents);
+document.getElementById("saveSettingsBtn").addEventListener("click",()=>{data.settings.className=document.getElementById("settingClass").value.trim()||"XII Bisnis Digital 2";data.settings.homeroom=document.getElementById("settingHomeroom").value.trim()||"Dea Faturahman, S.E.";data.settings.school=document.getElementById("settingSchool").value.trim()||"SMK Pasundan Rancaekek";save();alert("Pengaturan tersimpan.")});
+document.getElementById("backupBtn").addEventListener("click",backup);document.getElementById("printBtn").addEventListener("click",()=>printPage("Laporan Kelas - "+data.settings.className));
+document.getElementById("importBtn").addEventListener("click",()=>document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!x.students||!Array.isArray(x.students))throw new Error("Format backup tidak valid.");data={...defaultState(),...x};localStorage.setItem(KEY,JSON.stringify(data));renderAll();alert("Backup berhasil dipulihkan.")}catch(err){alert("Gagal import: "+err.message)}e.target.value=""});
+document.getElementById("resetBtn").addEventListener("click",()=>{if(confirm("PERINGATAN: semua absensi, tabungan, dan keuangan akan dihapus. Lanjutkan?")){data=defaultState();save();go("dashboard")}});
+document.getElementById("modalBackdrop").addEventListener("click",e=>{if(e.target.id==="modalBackdrop")closeModal()});
+
+function renderAll(){renderDashboard();renderAttendance();renderSavings();renderFinance();renderReports();renderStudents();renderSettings()}
+renderAll();
+</script>
+</body>
+</html>
